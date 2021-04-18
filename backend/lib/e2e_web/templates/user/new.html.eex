@@ -1,0 +1,13 @@
+<div>
+  <%= form_for @changeset, Routes.user_path(@conn, :create), fn f -> %>
+    <label>
+      Name
+      <%= text_input(f, :name, placeholder: "Your name") %>
+    </label>
+    <label>
+      Password
+      <%= password_input(f, :password, placeholder: "Your password") %>
+    </label>
+    <%= submit("Register") %>
+  <% end %>
+</div>
