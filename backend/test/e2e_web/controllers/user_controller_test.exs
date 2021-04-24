@@ -1,4 +1,5 @@
-defmodule E2EWeb.API.UserControllerTest do
+defmodule E2EWeb.UserControllerTest do
+  @moduledoc false
   use E2EWeb.ConnCase
 
   alias E2E.{Accounts, Repo}

@@ -21,22 +21,3 @@ config :e2e, sql_sandbox: System.get_env("SANDBOX") |> Kernel.is_nil() |> Kernel
 
 # Print only warnings and errors during test
 config :logger, level: :warn
-
-config :wallaby,
-  chromedriver: [
-    headless: System.get_env("HEADLESS") |> Kernel.is_nil() |> Kernel.not(),
-    capabilities: %{
-      javascriptEnabled: true,
-      chromeOptions: %{
-        args: [
-          "--no-sandbox",
-          "window-size=1280,720",
-          "--disable-gpu",
-          "--headless",
-          "--fullscreen",
-          "--user-agent=Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
-        ]
-      }
-    }
-  ],
-  otp_app: :e2e

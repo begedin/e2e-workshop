@@ -15,7 +15,7 @@ config :e2e,
 config :e2e, E2EWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "xJpwfY1gWDnVYc3qbR1wHe8ZKLcZR2Tx6z+TwsDHJHWeGqS+HPKp+DsADx3JuvhA",
-  render_errors: [view: E2EWeb.ErrorView, accepts: ~w(html json)],
+  render_errors: [view: E2EWeb.ErrorView, accepts: ~w(json)],
   pubsub_server: E2E.PubSub
 
 # Configures Elixir's Logger

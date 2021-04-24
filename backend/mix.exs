@@ -5,7 +5,7 @@ defmodule E2E.MixProject do
     [
       app: :e2e,
       dialyzer: dialyzer(),
-      version: "0.1.0",
+      version: "0.1.1",
       elixir: "1.12.0-rc.0",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -52,8 +52,7 @@ defmodule E2E.MixProject do
       {:phoenix_pubsub, "~> 2.0.0"},
       {:phoenix, "~> 1.5.3"},
       {:plug_cowboy, "~> 2.4.0"},
-      {:postgrex, "~> 0.15.0"},
-      {:wallaby, "~> 0.28.0", runtime: false, only: :test}
+      {:postgrex, "~> 0.15.0"}
     ]
   end
 

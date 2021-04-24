@@ -1,4 +1,4 @@
-defmodule E2EWeb.API.TokenController do
+defmodule E2EWeb.TokenController do
   use E2EWeb, :controller
 
   alias E2E.Accounts

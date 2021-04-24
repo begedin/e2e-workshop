@@ -5,18 +5,21 @@ defmodule E2EWeb.UserController do
 
   action_fallback E2EWeb.FallbackController
 
-  @spec new(Plug.Conn.t(), map) :: Plug.Conn.t()
-  def new(%Plug.Conn{} = conn, %{}) do
-    conn |> render(:new, changeset: Accounts.new_user())
+  def index(conn, _params) do
+    users = Accounts.list_users()
+    render(conn, "index.json", users: users)
   end
 
-  @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
-  def create(%Plug.Conn{} = conn, %{"user" => user_params}) do
-    with {:ok, _user} <- Accounts.create_user(user_params),
-         {:ok, token} <- Accounts.login(user_params) do
+  def create(conn, %{"user" => user_params}) do
+    with {:ok, user} <- Accounts.create_user(user_params) do
       conn
-      |> put_session(:token, token)
-      |> redirect(to: Routes.todo_path(conn, :index))
+      |> put_status(:created)
+      |> render("show.json", user: user)
     end
+  end
+
+  def show(conn, %{"id" => id}) do
+    user = Accounts.get_user!(id)
+    render(conn, "show.json", user: user)
   end
 end

@@ -1,6 +1,6 @@
 defmodule E2EWeb.TodoController do
   @moduledoc """
-  Serves HTML endpoints related to todos
+  Serves JSON endpoints related to todos
   """
   use E2EWeb, :controller
 
@@ -8,29 +8,33 @@ defmodule E2EWeb.TodoController do
 
   action_fallback(E2EWeb.FallbackController)
 
-  plug :authentication
+  plug(:authentication)
 
   defp authentication(conn, []) do
-    with token when is_binary(token) <- get_session(conn, :token),
+    with "Bearer " <> token <- conn |> Plug.Conn.get_req_header("authorization") |> List.first(),
          {:ok, %{id: id}} <- Accounts.verify_token(token),
          user <- Accounts.get_user!(id) do
       assign(conn, :user, user)
     else
-      _ -> conn |> redirect(to: Routes.session_path(conn, :new)) |> halt()
+      _ ->
+        conn
+        |> put_status(401)
+        |> put_view(E2EWeb.ErrorView)
+        |> render(:unauthenticated)
+        |> halt()
     end
   end
 
   @spec index(Plug.Conn.t(), map) :: Plug.Conn.t()
   def index(%Plug.Conn{} = conn, %{} = _params) do
     todos = Todos.list_todos(conn.assigns.user)
-    changeset = Todos.new_todo(conn.assigns.user)
-    render(conn, :index, changeset: changeset, todos: todos)
+    render(conn, :index, todos: todos)
   end
 
   @spec create(Plug.Conn.t(), map) :: Plug.Conn.t()
   def create(%Plug.Conn{} = conn, %{"todo" => todo_params}) do
-    with {:ok, _todo} <- Todos.create_todo(conn.assigns.user, todo_params) do
-      redirect(conn, to: Routes.todo_path(conn, :index))
+    with {:ok, todo} <- Todos.create_todo(conn.assigns.user, todo_params) do
+      conn |> put_status(201) |> render(:show, todo: todo)
     end
   end
 
@@ -38,7 +42,7 @@ defmodule E2EWeb.TodoController do
   def delete(%Plug.Conn{} = conn, %{"id" => id}) do
     with {:ok, todo} <- Todos.get_todo(conn.assigns.user, id),
          {:ok, _todo} <- Todos.delete_todo(todo) do
-      redirect(conn, to: Routes.todo_path(conn, :index))
+      render(conn, "show.json", todo: todo)
     end
   end
 end

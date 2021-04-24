@@ -1,4 +1,5 @@
-defmodule E2EWeb.API.TokenControllerTest do
+defmodule E2EWeb.TokenControllerTest do
+  @moduledoc false
   use E2EWeb.ConnCase
 
   @valid_attrs %{

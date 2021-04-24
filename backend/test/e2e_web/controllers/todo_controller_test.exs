@@ -1,4 +1,5 @@
-defmodule E2EWeb.API.TodoControllerTest do
+defmodule E2EWeb.TodoControllerTest do
+  @moduledoc false
   use E2EWeb.ConnCase
 
   alias E2E.{Accounts, Repo, Todos}
