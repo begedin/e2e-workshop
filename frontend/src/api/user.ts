@@ -1,9 +1,5 @@
+import { User } from '../schema';
 import { ApiResponse, get, post } from './core';
-
-export type User = {
-  id: number;
-  name: string;
-};
 
 export const getAllUsers = (): ApiResponse<User[]> => get<User[]>('users');
 export const getUser = (id: number) => get<User>(`users/${id}`);

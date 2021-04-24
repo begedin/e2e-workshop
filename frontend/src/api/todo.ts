@@ -1,11 +1,5 @@
+import { Todo } from '../schema';
 import { get, post, ApiResponse, remove } from './core';
-
-type Todo = {
-  id: number;
-  title: string;
-  // eslint-disable-next-line camelcase
-  user_id: number;
-};
 
 export const getAllTodos = (): ApiResponse<Todo[]> => get<Todo[]>('todos');
 
