@@ -1,4 +1,10 @@
-import { createStore, ActionContext } from 'vuex';
+import { InjectionKey } from '@vue/runtime-core';
+import {
+  createStore,
+  ActionContext,
+  useStore as baseUseStore,
+  Store,
+} from 'vuex';
 import * as api from '../api';
 import { Todo, User } from '../schema';
 
@@ -36,6 +42,7 @@ const login: Action<Parameters<typeof api.login>[0]> = async (
   commit('SET_ERROR', null);
   const response = await api.login(params);
   if ('data' in response) {
+    console.log(response.data);
     localStorage.setItem('token', response.data);
     commit('SET_AUTHENTICATED', true);
   } else {
@@ -105,7 +112,7 @@ const SET_ERROR: Mutation<string> = (state, error) => {
 
 export const store = createStore({
   state: (): State => ({
-    authenticated: !!localStorage.getItem('auth_token'),
+    authenticated: !!localStorage.getItem('token'),
     currentUser: null,
     users: [],
     todos: [],
@@ -129,3 +136,7 @@ export const store = createStore({
     REMOVE_TODO,
   },
 });
+
+export const key: InjectionKey<Store<State>> = Symbol();
+
+export const useStore = () => baseUseStore(key);

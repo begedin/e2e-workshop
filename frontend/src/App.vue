@@ -1,13 +1,27 @@
 <template>
-  <router-link to="/">Todos</router-link>
-  <router-link to="/login">Login</router-link>
-  <router-link to="/register">Register</router-link>
+  <router-link v-if="authenticated" to="/">Todos</router-link>
+  <button v-if="authenticated" @click="logout">Log Out</button>
+  <router-link v-if="!authenticated" to="/login">Login</router-link>
+  <router-link v-if="!authenticated" to="/register">Register</router-link>
   <router-view />
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-export default defineComponent({ name: 'App' });
+import { computed, defineComponent, watch } from 'vue';
+import { useStore } from './store';
+export default defineComponent({
+  name: 'App',
+  setup() {
+    const store = useStore();
+    const authenticated = computed(() => store.state.authenticated);
+
+    const logout = () => {
+      store.dispatch('logout');
+    };
+
+    return { authenticated, logout };
+  },
+});
 </script>
 
 <style>
