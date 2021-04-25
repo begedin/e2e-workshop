@@ -6,7 +6,7 @@ defmodule E2E.MixProject do
       app: :e2e,
       dialyzer: dialyzer(),
       version: "0.1.1",
-      elixir: "~> 1.12.0-rc.0",
+      elixir: ">= 1.11.0",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,

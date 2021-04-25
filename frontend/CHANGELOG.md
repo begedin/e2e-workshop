@@ -1,2 +1,3 @@
-# 0.0.1
-- [FEATURE] Connect to backend
+# 0.1.0
+
+- [FEATURE] Integrate frontend and backend
