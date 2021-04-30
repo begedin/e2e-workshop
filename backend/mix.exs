@@ -32,6 +32,7 @@ defmodule E2E.MixProject do
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(:e2e), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
@@ -48,7 +49,7 @@ defmodule E2E.MixProject do
       {:jason, "~> 1.0"},
       {:phoenix_ecto, "~> 4.2.0"},
       {:phoenix_html, "~> 2.14.2"},
-      {:phoenix_live_reload, "~> 1.2", only: [:dev]},
+      {:phoenix_live_reload, "~> 1.2", only: [:dev, :e2e]},
       {:phoenix_pubsub, "~> 2.0.0"},
       {:phoenix, "~> 1.5.3"},
       {:plug_cowboy, "~> 2.4.0"},

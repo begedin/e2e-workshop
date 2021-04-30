@@ -1,5 +1,5 @@
 {
-  "name": "e2e",
+  "name": "e2e-workshop-frontend",
   "version": "0.1.0",
   "scripts": {
     "dev": "vite",

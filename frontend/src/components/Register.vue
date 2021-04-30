@@ -1,6 +1,5 @@
 <template>
-  <div class="">Register</div>
-  <form @submit.stop.prevent="onSubmit">
+  <form class="register" @submit.stop.prevent="onSubmit">
     <input name="name" v-model="name" />
     <input name="password" v-model="password" />
     <button type="submit">Register</button>

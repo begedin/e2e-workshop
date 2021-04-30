@@ -39,11 +39,11 @@ defmodule E2EWeb.Endpoint do
 
   plug(CORSPlug, headers: CORSPlug.defaults()[:headers] ++ ["Sandbox"])
 
-  if Mix.env() === :test do
+  if Mix.env() === :e2e do
     plug(E2E.SandboxEnforcerPlug)
 
     plug(Phoenix.Ecto.SQL.Sandbox,
-      at: "/api/sandbox",
+      at: "/sandbox",
       repo: E2E.Repo,
       timeout: 60_000,
       header: "sandbox"
