@@ -1,10 +1,10 @@
 <template>
-  <navbar>
+  <nav>
     <RouterLink v-if="authenticated" to="/">Todos</RouterLink>
     <button v-if="authenticated" @click="logout">Log Out</button>
     <RouterLink v-if="!authenticated" to="/login">Login</RouterLink>
     <RouterLink v-if="!authenticated" to="/register">Register</RouterLink>
-  </navbar>
+  </nav>
   <main>
     <RouterView />
   </main>
@@ -48,7 +48,7 @@ export default defineComponent({
 </style>
 
 <style lang="scss" scoped>
-navbar {
+nav {
   display: grid;
   grid-auto-flow: column;
   column-gap: 0.5em;

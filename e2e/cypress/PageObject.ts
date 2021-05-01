@@ -69,11 +69,11 @@ export default class PageObject {
 
   navbar = {
     clickLogin() {
-      cy.get("navbar a[href='/login']").click();
+      cy.get("nav a[href='/login']").click();
     },
 
     clickTodos() {
-      cy.get("navbar a[href='/']").click();
+      cy.get("nav a[href='/']").click();
     },
   };
 

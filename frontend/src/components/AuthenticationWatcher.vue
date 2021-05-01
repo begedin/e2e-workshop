@@ -26,5 +26,6 @@ export default defineComponent({
 
     return {};
   },
+  render: () => null,
 });
 </script>

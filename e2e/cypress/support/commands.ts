@@ -1,3 +1,5 @@
+import { Promise } from "cypress/types/bluebird";
+
 const apiUrl = (path: string) => `http://localhost:4000/${path}`;
 
 const useSandbox = () =>
@@ -40,6 +42,6 @@ const createRequest = (schema: string, attributes: {}) => ({
 });
 
 const createCommand = (schema: string, attributes: {}) =>
-  cy.request(createRequest(schema, attributes)).then((response) => response.body);
+  cy.request(createRequest(schema, attributes)).its("body");
 
 Cypress.Commands.add("create", createCommand);
