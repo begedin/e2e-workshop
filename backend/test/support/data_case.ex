@@ -1,4 +1,4 @@
-defmodule E2E.DataCase do
+defmodule TodoList.DataCase do
   @moduledoc """
   This module defines the setup for tests requiring
   access to the application's data layer.
@@ -10,29 +10,31 @@ defmodule E2E.DataCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use E2E.DataCase, async: true`, although
+  by setting `use TodoList.DataCase, async: true`, although
   this option is not recommended for other databases.
   """
 
   use ExUnit.CaseTemplate
 
+  alias Ecto.Adapters.SQL
+
   using do
     quote do
-      alias E2E.Repo
+      alias TodoList.Repo
 
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import E2E.DataCase
-      import E2E.Factory
+      import TodoList.DataCase
+      import TodoList.Factory
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(E2E.Repo)
+    :ok = SQL.Sandbox.checkout(TodoList.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(E2E.Repo, {:shared, self()})
+      SQL.Sandbox.mode(TodoList.Repo, {:shared, self()})
     end
 
     :ok

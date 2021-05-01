@@ -7,16 +7,16 @@
 # General application configuration
 use Mix.Config
 
-config :e2e,
-  namespace: E2E,
-  ecto_repos: [E2E.Repo]
+config :todo_list,
+  namespace: TodoList,
+  ecto_repos: [TodoList.Repo]
 
 # Configures the endpoint
-config :e2e, E2EWeb.Endpoint,
+config :todo_list, TodoListWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "xJpwfY1gWDnVYc3qbR1wHe8ZKLcZR2Tx6z+TwsDHJHWeGqS+HPKp+DsADx3JuvhA",
-  render_errors: [view: E2EWeb.ErrorView, accepts: ~w(json)],
-  pubsub_server: E2E.PubSub
+  render_errors: [view: TodoListWeb.ErrorView, accepts: ~w(json)],
+  pubsub_server: TodoList.PubSub
 
 # Configures Elixir's Logger
 config :logger, :console,

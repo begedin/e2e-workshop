@@ -1,4 +1,4 @@
-defmodule E2EWeb.ChannelCase do
+defmodule TodoListWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -11,11 +11,13 @@ defmodule E2EWeb.ChannelCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use E2EWeb.ChannelCase, async: true`, although
+  by setting `use TodoListWeb.ChannelCase, async: true`, although
   this option is not recommended for other databases.
   """
 
   use ExUnit.CaseTemplate
+
+  alias Ecto.Adapters.SQL
 
   using do
     quote do
@@ -23,15 +25,15 @@ defmodule E2EWeb.ChannelCase do
       use Phoenix.ChannelTest
 
       # The default endpoint for testing
-      @endpoint E2EWeb.Endpoint
+      @endpoint TodoListWeb.Endpoint
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(E2E.Repo)
+    :ok = SQL.Sandbox.checkout(TodoList.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(E2E.Repo, {:shared, self()})
+      SQL.Sandbox.mode(TodoList.Repo, {:shared, self()})
     end
 
     :ok

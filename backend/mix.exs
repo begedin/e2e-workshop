@@ -1,11 +1,12 @@
-defmodule E2E.MixProject do
+defmodule TodoList.MixProject do
+  @moduledoc false
   use Mix.Project
 
   def project do
     [
-      app: :e2e,
+      app: :todo_list,
       dialyzer: dialyzer(),
-      version: "0.1.1",
+      version: "0.2.0",
       elixir: ">= 1.11.0",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -25,7 +26,7 @@ defmodule E2E.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {E2E.Application, []},
+      mod: {TodoList.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -41,7 +42,7 @@ defmodule E2E.MixProject do
   defp deps do
     [
       {:cors_plug, "~> 2.0"},
-      {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:ecto_sql, "~> 3.6.0"},
       {:ex_machina, "~> 2.7.0", only: [:test, :e2e]},
@@ -74,20 +75,7 @@ defmodule E2E.MixProject do
     [
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate", "test"],
-      acceptance: [
-        "frontend build",
-        "ecto.create --quiet",
-        "ecto.migrate",
-        "cmd 'E2E=1 mix test --include acceptance'"
-      ],
-      ci: [
-        "frontend build",
-        "ecto.create --quiet",
-        "ecto.migrate",
-        "cmd 'E2E=1 HEADLESS=1 mix test --include acceptance'"
-      ],
-      frontend: [~s[cmd "cd assets; npm run $!"]]
+      test: ["ecto.create --quiet", "ecto.migrate", "test"]
     ]
   end
 end

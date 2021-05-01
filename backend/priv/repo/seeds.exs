@@ -5,7 +5,7 @@
 # Inside the script, you can read and write to any of your
 # repositories directly:
 #
-#     E2E.Repo.insert!(%E2E.SomeSchema{})
+#     TodoList.Repo.insert!(%TodoList.SomeSchema{})
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.

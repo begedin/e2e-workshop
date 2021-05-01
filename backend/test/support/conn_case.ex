@@ -1,4 +1,4 @@
-defmodule E2EWeb.ConnCase do
+defmodule TodoListWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -11,30 +11,32 @@ defmodule E2EWeb.ConnCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use E2EWeb.ConnCase, async: true`, although
+  by setting `use TodoListWeb.ConnCase, async: true`, although
   this option is not recommended for other databases.
   """
 
   use ExUnit.CaseTemplate
+
+  alias Ecto.Adapters.SQL
 
   using do
     quote do
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
-      import E2E.Factory
-      alias E2EWeb.Router.Helpers, as: Routes
+      import TodoList.Factory
+      alias TodoListWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
-      @endpoint E2EWeb.Endpoint
+      @endpoint TodoListWeb.Endpoint
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(E2E.Repo)
+    :ok = SQL.Sandbox.checkout(TodoList.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(E2E.Repo, {:shared, self()})
+      SQL.Sandbox.mode(TodoList.Repo, {:shared, self()})
     end
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}

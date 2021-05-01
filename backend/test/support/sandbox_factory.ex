@@ -1,10 +1,10 @@
-defmodule E2E.SandboxFactory do
+defmodule TodoList.SandboxFactory do
   @moduledoc false
 
-  use ExMachina.Ecto, repo: E2E.Repo
+  use ExMachina.Ecto, repo: TodoList.Repo
 
-  alias E2E.{Accounts, Repo}
-  alias E2E.Factory, as: CoreFactory
+  alias TodoList.{Accounts, Repo}
+  alias TodoList.Factory, as: CoreFactory
 
   def user_factory(attrs) do
     CoreFactory.build(:user, attrs)

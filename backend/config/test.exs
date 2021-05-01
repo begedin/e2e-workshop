@@ -1,23 +1,23 @@
 use Mix.Config
 
+config :todo_list, env: :test
+
 config :phoenix, :plug_init_mode, :runtime
 
-config :e2e, E2EWeb.Endpoint,
+config :todo_list, TodoListWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
   code_reloader: false,
   check_origin: false,
-  server: System.get_env("E2E") |> Kernel.is_nil() |> Kernel.not()
+  server: false
 
 # Configure your database
-config :e2e, E2E.Repo,
+config :todo_list, TodoList.Repo,
   username: "postgres",
   password: "postgres",
   database: "e2e_test",
   hostname: System.get_env("DB_HOST") || "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
-
-config :e2e, sql_sandbox: System.get_env("SANDBOX") |> Kernel.is_nil() |> Kernel.not()
 
 # Print only warnings and errors during test
 config :logger, level: :warn

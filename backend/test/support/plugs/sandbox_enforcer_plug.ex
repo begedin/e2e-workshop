@@ -1,4 +1,4 @@
-defmodule E2E.SandboxEnforcerPlug do
+defmodule TodoList.SandboxEnforcerPlug do
   @moduledoc """
   Adds support for sandbox mode in the e2e environment.
 
@@ -15,7 +15,7 @@ defmodule E2E.SandboxEnforcerPlug do
   require Logger
 
   def init(_) do
-    [enabled: Application.get_env(:e2e, :sql_sandbox, false)]
+    [enabled: Application.get_env(:todo_list, :sql_sandbox, false)]
   end
 
   def call(conn, enabled: false), do: conn
