@@ -42,7 +42,6 @@ const login: Action<Parameters<typeof api.login>[0]> = async (
   commit('SET_ERROR', null);
   const response = await api.login(params);
   if ('data' in response) {
-    console.log(response.data);
     localStorage.setItem('token', response.data);
     commit('SET_AUTHENTICATED', true);
   } else {
