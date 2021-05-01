@@ -13,7 +13,7 @@ defmodule E2EWeb.TodoController do
   defp authentication(conn, []) do
     with "Bearer " <> token <- conn |> Plug.Conn.get_req_header("authorization") |> List.first(),
          {:ok, %{id: id}} <- Accounts.verify_token(token),
-         user <- Accounts.get_user!(id) do
+         {:ok, user} <- Accounts.get_user(id) do
       assign(conn, :user, user)
     else
       _ ->

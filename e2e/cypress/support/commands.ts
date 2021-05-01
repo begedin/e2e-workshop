@@ -1,27 +1,25 @@
 const apiUrl = (path: string) => `http://localhost:4000/${path}`;
 
-const checkoutSandbox = () =>
-  cy
-    .intercept(
-      {
-        url: "http://localhost:4000/*",
-      },
-      (req) => {
-        console.log("interceptor!!!", req.url);
-        const sandboxId = Cypress.env("sandboxId");
-        console.log("adding header:", sandboxId);
-        if (sandboxId) {
-          req.headers["sandbox"] = sandboxId;
-        }
-        console.log(req.headers);
-        req.continue();
+const useSandbox = () =>
+  cy.intercept(
+    {
+      url: "http://localhost:4000/**",
+    },
+    (req) => {
+      const sandboxId = Cypress.env("sandboxId");
+      if (sandboxId) {
+        req.headers["sandbox"] = sandboxId;
       }
-    )
-    .request("POST", apiUrl("sandbox"))
-    .then((response) => {
-      Cypress.env("sandboxId", response.body);
-      console.log("put id", response.body);
-    });
+      req.continue();
+    }
+  );
+
+Cypress.Commands.add("useSandbox", useSandbox);
+
+const checkoutSandbox = () =>
+  cy.request("POST", apiUrl("sandbox")).then((response) => {
+    Cypress.env("sandboxId", response.body);
+  });
 
 Cypress.Commands.add("checkoutSandbox", checkoutSandbox);
 
@@ -45,12 +43,3 @@ const createCommand = (schema: string, attributes: {}) =>
   cy.request(createRequest(schema, attributes)).then((response) => response.body);
 
 Cypress.Commands.add("create", createCommand);
-
-const loginCommand = (user: { name: string; password: string }) => {
-  cy.visit("/login");
-  cy.get('input[type="text"]').clear().type(user.name);
-  cy.get('input[type="password"]').clear().type(user.password);
-  cy.get("button").click();
-};
-
-Cypress.Commands.add("login", loginCommand);

@@ -3,7 +3,7 @@ defmodule E2EWeb.UserController do
 
   alias E2E.Accounts
 
-  action_fallback E2EWeb.FallbackController
+  action_fallback(E2EWeb.FallbackController)
 
   def index(conn, _params) do
     users = Accounts.list_users()
@@ -19,7 +19,8 @@ defmodule E2EWeb.UserController do
   end
 
   def show(conn, %{"id" => id}) do
-    user = Accounts.get_user!(id)
-    render(conn, "show.json", user: user)
+    with {:ok, user} = Accounts.get_user(id) do
+      render(conn, "show.json", user: user)
+    end
   end
 end

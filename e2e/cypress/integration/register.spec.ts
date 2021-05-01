@@ -1,37 +1,24 @@
 /// <reference types="cypress" />
-/// <reference path="../support/index.d.ts" />
-
-class RegisterPage {
-  visit() {
-    cy.visit("/register");
-  }
-
-  fillName(value: string) {
-    cy.get(".register input[name=name]").clear().type(value);
-  }
-
-  fillPassword(value: string) {
-    cy.get(".register input[name=password]").clear().type(value);
-  }
-
-  submit() {
-    cy.get("button").click();
-  }
-}
+/// <reference types="../support" />
+import PageObject from "../PageObject";
 
 describe("Register", () => {
-  beforeEach(() => cy.checkoutSandbox());
-  afterEach(() => cy.checkinSandbox());
+  beforeEach(() => {
+    cy.useSandbox();
+    cy.checkoutSandbox();
+  });
+
+  afterEach(() => {
+    cy.checkinSandbox();
+  });
 
   it("registers user", () => {
-    const page = new RegisterPage();
+    const app = new PageObject();
 
-    console.log("visiting...");
-
-    page.visit();
-    page.fillName("Joe");
-    page.fillPassword("password1");
-    page.submit();
+    app.registerPage.visit();
+    app.registerPage.fillName("Joe");
+    app.registerPage.fillPassword("password1");
+    app.registerPage.submit();
 
     cy.url().should("not.contain", "register");
   });

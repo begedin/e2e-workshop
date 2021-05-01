@@ -1,8 +1,11 @@
 declare namespace Cypress {
-  interface Chainable {
-    checkoutSandbox(): Promise<string>;
-    checkinSandbox(): Chainable;
-    create<T = object, R = object>(params: T): Promise<R>;
-    login(params: { name: string; password: string }): Chainable;
+  interface Chainable<Subject> {
+    useSandbox(): Chainable<void>;
+    checkoutSandbox(): Chainable<string>;
+    checkinSandbox(): Chainable<void>;
+    create<T = Record<string, string | number | boolean>, R = any>(
+      type: String,
+      params: T
+    ): Chainable<R>;
   }
 }

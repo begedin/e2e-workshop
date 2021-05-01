@@ -1,18 +1,15 @@
 <template>
-  <div class="">Login</div>
-  <form @submit.stop.prevent="onSubmit">
-    <input name="name" v-model="name" />
-    <input name="password" v-model="password" />
-    <button type="submit">Login</button>
-  </form>
+  <account-form class="login" @submit="onSubmit" />
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, watch } from '@vue/runtime-core';
+import { defineComponent, computed, watch } from '@vue/runtime-core';
 import { useRouter } from 'vue-router';
 import { useStore } from '../store';
+import AccountForm from './AccountForm.vue';
 
 export default defineComponent({
+  components: { AccountForm },
   setup() {
     const router = useRouter();
     const store = useStore();
@@ -25,23 +22,10 @@ export default defineComponent({
       }
     });
 
-    const name = ref('');
-    const password = ref('');
+    const onSubmit = (params: { name: string; password: string }) =>
+      store.dispatch('login', params);
 
-    const onSubmit = () => {
-      store.dispatch('login', {
-        name: name.value,
-        password: password.value,
-      });
-    };
-
-    return {
-      name,
-      password,
-      onSubmit,
-    };
+    return { onSubmit };
   },
 });
 </script>
-
-<style lang="scss" scoped></style>

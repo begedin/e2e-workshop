@@ -1,7 +1,8 @@
 module.exports = {
-  parser: '@typescript-eslint/parser',
+  parser: 'vue-eslint-parser',
   parserOptions: {
     ecmaVersion: 2020,
+    parser: '@typescript-eslint/parser',
     sourceType: 'module',
     ecmaFeatures: {
       jsx: true,
@@ -9,7 +10,9 @@ module.exports = {
   },
   extends: [
     'plugin:@typescript-eslint/recommended',
-    'prettier/@typescript-eslint',
-    'plugin:prettier/recommended',
+    'plugin:vue/recommended',
+    'plugin:prettier-vue/recommended',
+    'prettier',
   ],
+  rules: { 'vue/no-multiple-template-root': 'off' },
 };

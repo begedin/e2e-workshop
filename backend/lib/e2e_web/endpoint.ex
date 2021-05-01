@@ -59,7 +59,7 @@ defmodule E2EWeb.Endpoint do
   plug(Plug.MethodOverride)
   plug(Plug.Head)
 
-  if Mix.env() === :test do
+  if Mix.env() === :e2e do
     plug(E2E.E2EPlug)
   end
 
