@@ -62,6 +62,18 @@ class TodosPage {
   }
 }
 
+/**
+ * Main page object used to interact with te page in tests.
+ *
+ * This is a basic example of how one could deal with test selectors and making
+ * tests less brittle/easier to write.
+ *
+ * A larger app would likely deal with multiple page objects.
+ *
+ * Page objects could also be simple objects which just define css selectors for
+ * test interaction. That makes them less powerful, but it allows them to be
+ * less coupled to the test suite actually being used.
+ */
 export default class PageObject {
   registerPage: RegisterPage;
   loginPage: LoginPage;
@@ -83,6 +95,12 @@ export default class PageObject {
     this.todosPage = new TodosPage();
   }
 
+  /**
+   * Complex action which
+   * - navigates to the login page
+   * - fills in form
+   * - submits it
+   */
   login(name: string, password: string) {
     this.loginPage.visit();
     this.loginPage.fillName(name);
