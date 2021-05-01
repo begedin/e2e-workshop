@@ -1,35 +1,28 @@
 <template>
+  <AuthenticationGuard />
   <div class="todos">
     <h1>Todos</h1>
-    <todo v-for="todo in todos" :key="todo.id" :todo="todo" />
-    <new-todo />
+    <TodoItem v-for="todo in todos" :key="todo.id" :todo="todo" />
+    <NewTodo />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, watch } from '@vue/runtime-core';
-import { useRouter } from 'vue-router';
+import { defineComponent, computed } from '@vue/runtime-core';
 import { useStore } from '../store';
+import AuthenticationGuard from './AuthenticationGuard.vue';
 import NewTodo from './NewTodo.vue';
-import Todo from './Todo.vue';
+import TodoItem from './TodoItem.vue';
 
+/**
+ * Lists out all currently loaded todos, as well as the UI to create a new todo.
+ */
 export default defineComponent({
-  components: { NewTodo, Todo },
+  components: { NewTodo, TodoItem, AuthenticationGuard },
   setup() {
     const store = useStore();
-    const router = useRouter();
 
-    const authenticated = computed(() => store.state.authenticated);
-
-    watch(authenticated, (authenticated) => {
-      if (!authenticated) {
-        router.push('/login');
-      }
-    });
-
-    if (store.state.authenticated) {
-      store.dispatch('loadTodos');
-    }
+    store.dispatch('loadTodos');
 
     const todos = computed(() => store.state.todos);
 

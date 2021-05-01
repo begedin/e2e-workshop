@@ -15,6 +15,11 @@
 <script lang="ts">
 import { defineComponent, ref } from '@vue/runtime-core';
 
+/**
+ * Common component used by /register and /login pages.
+ *
+ * Renders account form and emits submit event with account params
+ */
 export default defineComponent({
   emits: ['submit'],
   setup(props, { emit }) {
@@ -33,7 +38,7 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .account-form {
   display: flex;
   flex-direction: column;

@@ -9,6 +9,9 @@
 import { defineComponent, ref } from '@vue/runtime-core';
 import { useStore } from '../store';
 
+/**
+ * Renders form and handles creation of a new todo.
+ */
 export default defineComponent({
   setup() {
     const store = useStore();
@@ -18,7 +21,6 @@ export default defineComponent({
       await store.dispatch('createTodo', { title: newTodo.value });
       if (!store.state.error) {
         newTodo.value = '';
-        console.log(store.state.todos.length);
       }
     };
 

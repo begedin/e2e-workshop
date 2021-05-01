@@ -1,20 +1,23 @@
 <template>
   <navbar>
-    <router-link v-if="authenticated" to="/">Todos</router-link>
+    <RouterLink v-if="authenticated" to="/">Todos</RouterLink>
     <button v-if="authenticated" @click="logout">Log Out</button>
-    <router-link v-if="!authenticated" to="/login">Login</router-link>
-    <router-link v-if="!authenticated" to="/register">Register</router-link>
+    <RouterLink v-if="!authenticated" to="/login">Login</RouterLink>
+    <RouterLink v-if="!authenticated" to="/register">Register</RouterLink>
   </navbar>
   <main>
-    <router-view />
+    <RouterView />
   </main>
+  <AuthenticationWatcher />
 </template>
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 import { useStore } from './store';
+import AuthenticationWatcher from './components/AuthenticationWatcher.vue';
 export default defineComponent({
   name: 'App',
+  components: { AuthenticationWatcher },
   setup() {
     const store = useStore();
     const authenticated = computed(() => store.state.authenticated);
@@ -26,11 +29,7 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
-body {
-  font-size: 16px;
-}
-
+<style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -43,8 +42,12 @@ body {
   justify-content: center;
   align-items: center;
   row-gap: 1em;
-}
 
+  font-size: 16px;
+}
+</style>
+
+<style lang="scss" scoped>
 navbar {
   display: grid;
   grid-auto-flow: column;

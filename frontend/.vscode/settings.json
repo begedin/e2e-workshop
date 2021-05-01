@@ -14,5 +14,6 @@
   },
   "[vue]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "vetur.completion.tagCasing": "initial"
 }

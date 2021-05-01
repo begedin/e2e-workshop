@@ -10,7 +10,11 @@ import { defineComponent } from '@vue/runtime-core';
 import { Todo } from '../schema';
 import { useStore } from '../store';
 
+/**
+ * Renders a single todo item, with associated deletion UI and actions
+ */
 export default defineComponent({
+  name: 'TodoItem',
   props: {
     todo: {
       required: true,
