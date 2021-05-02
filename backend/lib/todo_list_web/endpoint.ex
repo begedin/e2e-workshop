@@ -53,6 +53,26 @@ defmodule TodoListWeb.Endpoint do
 
   plug(CORSPlug, headers: cors_headers)
 
+  plug(Plug.Parsers,
+    parsers: [:urlencoded, :multipart, :json],
+    pass: ["*/*"],
+    json_decoder: Phoenix.json_library()
+  )
+
+  plug(Plug.MethodOverride)
+  plug(Plug.Head)
+
+  # For running CI on gitthub, we need an endpoint which returns a 200 as long
+  # as the server is running.
+
+  defp health_check(%{request_path: "/health_check"} = conn, _) do
+    conn |> send_resp(200, "") |> Plug.Conn.halt()
+  end
+
+  defp health_check(conn, _), do: conn
+
+  plug(:health_check)
+
   if is_e2e? do
     # Prevents all api requests without a sandbox id in
     # headers from going through.,
@@ -66,18 +86,7 @@ defmodule TodoListWeb.Endpoint do
       timeout: 60_000,
       header: "sandbox"
     )
-  end
 
-  plug(Plug.Parsers,
-    parsers: [:urlencoded, :multipart, :json],
-    pass: ["*/*"],
-    json_decoder: Phoenix.json_library()
-  )
-
-  plug(Plug.MethodOverride)
-  plug(Plug.Head)
-
-  if is_e2e? do
     # Exposes additional endpoints to easily create db records needed for
     # test setup.
     plug(TodoList.FactoryPlug)

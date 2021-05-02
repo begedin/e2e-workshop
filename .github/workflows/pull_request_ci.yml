@@ -1,0 +1,116 @@
+name: Pull Request CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  cachev: 2
+
+jobs:
+  build_and_test:
+    name: Build and test everything
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres:12
+        ports: ['5432:5432']
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+    
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        elixir-version: '1.11'
+        otp-version: '23.0'
+
+    - name: Setup node
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16.0
+
+    - name: Install wait-on
+      run: npm i -g wait-on
+
+    - name: Restore elixir backend cache
+      id: elixir-cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          backend/deps
+          backend/_build
+          backend/priv/plts
+        key: ${{ runner.os }}-mix-${{ hashFiles('backend/mix.lock') }}
+        restore-keys: ${{ runner.os }}-elixir-cache-${{ env.cachev }}-
+
+    - name: Fetch /backend deps
+      if: steps.elixir-cache.outputs.cache-hit != 'true'
+      run: (cd backend; mix deps.get)
+
+    - name: Lint /backend (formatter)
+      run: (cd backend; mix format --check-formatted)
+
+    - name: Lint /backend (dialyzer)
+      run: (cd backend; mix dialyzer)
+
+    - name: Run /backend tests
+      run: (cd backend; mix test)
+
+    - name: Restore /frontend cache
+      id: frontend-cache
+      uses: actions/cache@v2
+      with:
+        path: frontend/node_modules
+        key: ${{ runner.os }}-mix-${{ hashFiles('frontend/package-lock.json') }}
+        restore-keys: ${{ runner.os }}-frontend-cache-${{ env.cachev }}-
+
+    - name: Fetch /frontend deps
+      if: steps.frontend-cache.outputs.cache-hit != 'true'
+      run: (cd frontend; npm i)
+
+    - name: Restore /e2e cache
+      id: e2e-cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          e2e/node_modules
+          /home/runner/.cache/Cypress
+        key: ${{ runner.os }}-mix-${{ hashFiles('e2e/package-lock.json') }}
+        restore-keys: ${{ runner.os }}-e2e-cache-${{ env.cachev }}-
+
+    - name: Fetch /e2e deps
+      if: steps.e2e-cache.outputs.cache-hit != 'true'
+      run: (cd e2e; npm i)
+
+    - name: Run E2E tests 
+      # We run backend and frontend dev servers, then use the npm wait-on module
+      # to wait for them to become available, before running e2e tests.
+      # In the case of the frontend, the vite dev server is used, which, due to 
+      # only accepting certain headers, returns a 404 when waiting on. 
+      # To resolve that, we create a custom config for wait-on and write it into 
+      # wait.json, before using it in the command.
+      # This could likely be done using the start-server-and-test github action.
+      run: > 
+        (
+          (
+            cd frontend; 
+            echo '{"headers": {"Accept": "text/html, application/json, text/plain, */*"}}' > wait.json
+          )
+          (cd frontend; npm run dev &) &&
+          (cd frontend; npx wait-on http-get://localhost:3000 -c wait.json) &&
+          (cd backend; MIX_ENV=e2e mix ecto.setup; MIX_ENV=e2e mix phx.server &) &&
+          npx wait-on http://localhost:4000/health_check &&
+          (cd e2e; npx cypress run)
+        )
+    
