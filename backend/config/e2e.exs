@@ -21,6 +21,6 @@ config :todo_list, TodoListWeb.Endpoint,
 config :todo_list, TodoList.Repo,
   username: "postgres",
   password: "postgres",
-  database: "e2e_e2e",
+  database: "todo_list_e2e",
   hostname: System.get_env("DB_HOST") || "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
