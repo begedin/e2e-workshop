@@ -37,36 +37,7 @@ defmodule TodoListWeb.Endpoint do
   plug(Plug.RequestId)
   plug(Plug.Telemetry, event_prefix: [:phoenix, :endpoint])
 
-  # We use a key in config, rather than just checking Mix.env, because
-  # Mix.env will not be available, if we want to run this in release, for
-  # example.
-  is_e2e? = Application.get_env(:todo_list, :env) === :e2e
-
-  # CorsPlug is generally needed when the backend is served from a different
-  # endpoint to the frontend, but for e2e, we need to allow an extra header.
-  cors_headers =
-    if is_e2e? do
-      CORSPlug.defaults()[:headers] ++ ["sandbox"]
-    else
-      CORSPlug.defaults()[:headers]
-    end
-
-  plug(CORSPlug, headers: cors_headers)
-
-  if is_e2e? do
-    # Prevents all api requests without a sandbox id in
-    # headers from going through.,
-    plug(TodoList.SandboxEnforcerPlug)
-
-    # Exposes endpoints to checkout a sandbox, generating a sandbox id, as
-    # well as to check that sandbox back in
-    plug(Phoenix.Ecto.SQL.Sandbox,
-      at: "/sandbox",
-      repo: TodoList.Repo,
-      timeout: 60_000,
-      header: "sandbox"
-    )
-  end
+  plug(CORSPlug, headers: CORSPlug.defaults()[:headers])
 
   plug(Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
@@ -76,12 +47,6 @@ defmodule TodoListWeb.Endpoint do
 
   plug(Plug.MethodOverride)
   plug(Plug.Head)
-
-  if is_e2e? do
-    # Exposes additional endpoints to easily create db records needed for
-    # test setup.
-    plug(TodoList.FactoryPlug)
-  end
 
   plug(Plug.Session, @session_options)
   plug(TodoListWeb.Router)
