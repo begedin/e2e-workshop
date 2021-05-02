@@ -1,8 +1,8 @@
 /// <reference types="cypress" />
 /// <reference types="../support" />
-import PageObject from "../PageObject";
+import PageObject from '../PageObject';
 
-describe("Register", () => {
+describe('Register', () => {
   beforeEach(() => {
     cy.useSandbox();
     cy.checkoutSandbox();
@@ -12,14 +12,14 @@ describe("Register", () => {
     cy.checkinSandbox();
   });
 
-  it("registers user", () => {
+  it('registers user', () => {
     const app = new PageObject();
 
     app.registerPage.visit();
-    app.registerPage.fillName("Joe");
-    app.registerPage.fillPassword("password1");
+    app.registerPage.fillName('Joe');
+    app.registerPage.fillPassword('password1');
     app.registerPage.submit();
 
-    cy.url().should("not.contain", "register");
+    cy.url().should('not.contain', 'register');
   });
 });

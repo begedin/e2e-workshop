@@ -11,10 +11,17 @@ An elixir+phoenix backend which is a simple todo creation api
 
 - tests can be run using `mix test`
 - backend can be started using `mix phx.server`
+- the e2e testing environment is **already set up here**
 - backend can be started for e2e testing using `MIX_ENV=e2e mix phx.server`
 
 In a real-life scenario, this might not be part of the core repository and
 instead can be cloned from a separate remote repository.
+
+## /backend_initial
+
+The same backend as in `/backend`, except no e2e environment or features have
+been setup. This one will be used during workshop as a starting point to setup
+an e2e environment.
 
 ## /frontend
 
@@ -28,7 +35,10 @@ instead can be cloned from a separate remote repository.
 
 ## /e2e
 
-A cypress e2e testing setup
+A fully setup cypress e2e configuration.
+
+During worshop, the will go through setting up this exact environment,
+completely from scratch, in a new folder.
 
 - Requires backend to run in e2e testing mode, on `localhost:4000`
 - Requires frontend to run in dev mode, on `localhost:3000`
@@ -58,13 +68,15 @@ npm i
 npm run dev
 ```
 
-Navigate to `/backend` and make sure you can run it in E2E mode
+Navigate to `/backend_initial` and make sure you can run the tests as well as
+running the server in dev mode.
 
 ```
 cd e2e-workshop/backend
 mix deps.get
-MIX_ENV=e2e mix ecto.setup
-MIX_ENV=e2e mix phx.server
+MIX_ENV=test mix ecto.setup
+mix test
+mix phx.server
 ```
 
 This should allow you to follow the process of addinga Cypress testing suite
@@ -80,6 +92,7 @@ npm run dashboard
 ```
 
 If you're seeing the cypress window, you're good to go.
+
 # I want to add a cypress test suite of my own
 
 To do this, we need to add e2e support to our backend and then setup a cypress
@@ -89,9 +102,9 @@ configuration. We then, of course, need to hook up the two together.
 
 ### Setup the basic environment
 
-Assuming `/backend` contains no code supporting e2e testing yet.
+Copy the contents of `backend_initial` to a new folder, for example `my_backend`
 
-Create `backend/config/e2e.exs` and add the following to it
+Create `my_backend/config/e2e.exs` and add the following to it
 
 ```Elixir
 use Mix.Config
@@ -117,7 +130,21 @@ config :todo_list, TodoList.Repo,
   pool: Ecto.Adapters.SQL.Sandbox
 ```
 
-Add the following to `endpoint.ex`, after the call to `Plug.Telemetry`
+Since we want to do code-reloading, we also need to enable the
+`phoenix_live_reload` library in our new `:e2e` environment, in `mix.exs`
+
+```Elixir
+defp deps do
+  [
+    # ...
+    {:phoenix_live_reload, "~> 1.2", only: [:dev, :e2e]},
+    # ...
+  ]
+end
+```
+
+Finally,we need to add the following to `endpoint.ex`, after the entry for
+`Plug.Telemetry`
 
 ```Elixir
 is_e2e? = Application.get_env(:todo_list, :env) === :e2e
@@ -239,64 +266,25 @@ end
 ### Expose ex_machina to the frontend, for easier test data setup
 
 We need to expose an endpoint which would allow us to easily pre-create db
-records in our test setup.
+records in our test setup. We are already using `ex_machina` in normal tests,
+so let's add it to our `:e2e` environment.
+
+```Elixir
+defp deps do
+  [
+    # ...
+    {:ex_machina, "~> 2.7.0", only: [:test, :e2e]},
+    # ...
+  ]
+end
+
+```
+
+Now, the frontend client will need some endpoints to talk to `ex_machina`
 
 This is another useful thing we can do via a plug.
 
-The default way ex_machina creates associations for a record is problematic, so
-we need to create a custom factory for E2E specifically.
-
-#### Custom factory
-
-```Elixir
-# backend/test/support/sandbox_factory.ex
-defmodule TodoList.SandboxFactory do
-  @moduledoc false
-
-  use ExMachina.Ecto, repo: TodoList.Repo
-
-  alias TodoList.{Accounts, Repo}
-  alias TodoList.Factory, as: BaseFactory
-
-  def user_factory(attrs) do
-    BaseFactory.build(:user, attrs)
-  end
-
-  def todo_factory(attrs) do
-    attrs
-    |> assoc_by_id(:user, Accounts.User)
-    |> do_build(:todo)
-  end
-
-  # If attrs has an association key, for example, attrs for todo have a `:user`,
-  # and that association as a key `:id`, then load the associated record using
-  # specified module and replace the association key with the loaded record.
-  #
-  # Otherwise, do nothing
-  #
-  # For example:
-  #
-  # ```
-  # assoc_by_id([title: "Foo", user: %{id: 1}])
-  #
-  # > [title: "Foo", user: %TodoList.Accounts.User{id: 1}]
-  # ```
-  defp assoc_by_id(attrs, assoc_key, module) do
-    with %{} = assoc <- attrs[assoc_key],
-         id when not is_nil(id) <- assoc[:id] do
-      attrs |> Map.put(assoc_key, Repo.get(module, id))
-    else
-      nil -> attrs
-    end
-  end
-
-  defp do_build(attrs, schema) do
-    BaseFactory.build(schema, attrs)
-  end
-end
-```
-
-#### Factory plug
+#### Factory endpoints
 
 ```Elixir
 # backend/test/support/plugs/factory_plug.ex
@@ -364,6 +352,61 @@ defmodule TodoList.FactoryPlug do
 end
 ```
 
+The default way ex_machina creates associations for a record is problematic, so
+we need to create a custom factory for E2E specifically.
+
+#### Custom factory
+
+```Elixir
+# backend/test/support/sandbox_factory.ex
+defmodule TodoList.SandboxFactory do
+  @moduledoc false
+
+  use ExMachina.Ecto, repo: TodoList.Repo
+
+  alias TodoList.{Accounts, Repo}
+  alias TodoList.Factory, as: BaseFactory
+
+  def user_factory(attrs) do
+    BaseFactory.build(:user, attrs)
+  end
+
+  def todo_factory(attrs) do
+    attrs
+    |> assoc_by_id(:user, Accounts.User)
+    |> do_build(:todo)
+  end
+
+  # If attrs has an association key, for example, attrs for todo have a `:user`,
+  # and that association as a key `:id`, then load the associated record using
+  # specified module and replace the association key with the loaded record.
+  #
+  # Otherwise, do nothing
+  #
+  # For example:
+  #
+  # ```
+  # assoc_by_id([title: "Foo", user: %{id: 1}])
+  #
+  # > [title: "Foo", user: %TodoList.Accounts.User{id: 1}]
+  # ```
+  defp assoc_by_id(attrs, assoc_key, module) do
+    with %{} = assoc <- attrs[assoc_key],
+         id when not is_nil(id) <- assoc[:id] do
+      attrs |> Map.put(assoc_key, Repo.get(module, id))
+    else
+      nil -> attrs
+    end
+  end
+
+  defp do_build(attrs, schema) do
+    BaseFactory.build(schema, attrs)
+  end
+end
+```
+
+Now we just need to add this plug to our endpoint module
+
 #### Add the plug to our endpoint
 
 ```Elixir
@@ -380,9 +423,7 @@ end
 plug(Plug.Session, @session_options)
 ```
 
-Now, we also have factory support
-
-
+Done. All our factory functions are now exposed via a single API endpoint.
 
 ## Add a cypress setup
 
@@ -392,8 +433,8 @@ environment. This explains how to set one up from scratch.
 
 ```bash
 cd e2e-workshop
-mkdir cypress
-cd cypress
+mkdir my_e2e
+cd my_e2e
 ```
 
 ###  Initialize an npm project
@@ -403,16 +444,23 @@ of these things could be skipped.
 
 ```bash
 npm init
-npm -i --save-dev \
-  @typescript-eslint/eslint-plugin \
-  @typescript-eslint/parser \
-  cypress \
-  eslint-plugin-cypress \
-  typescript \
+npm i typescript @typescript-eslint/eslint-plugin @typescript-eslint/parser \
+      cypress eslint-plugin-cypress @types/node --save-dev
 ```
 
-At this point, you should have a bunch of example test cases and should be able
-to run cypress using `npx cypress:open`
+`cypress` is the key package here, but we only have it installed. If we run it
+once, it will create the initial setup for us. We need to do so with
+
+```bash
+npx cypress open
+```
+
+Now, we have the basic cypress configuration, as well as a bunch of example
+tests, working with an example cypress site, hosted online.
+
+But we've also added typescript, eslint and a bunch of plugins, because we want
+to make our configuration nice, so let's deal with that, by adding the
+recommended config for those parts.
 
 ### Add the recommended configuration files
 
@@ -420,12 +468,27 @@ to run cypress using `npx cypress:open`
 
 ```js
 module.exports = {
-  plugins: [
-    'cypress',
-  ],
+  parser: '@typescript-eslint/parser',
+  plugins: ['cypress', 'prettier', '@typescript-eslint'],
   env: {
     'cypress/globals': true,
   },
+  extends: [
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+    'prettier',
+  ],
+};
+```
+
+`.prettierrc.js`
+```js
+/* globals module */
+module.exports = {
+  tabWidth: 2,
+  semi: true,
+  singleQuote: true,
+  printWidth: 80,
 };
 ```
 
@@ -433,6 +496,8 @@ module.exports = {
 ```json
 {
   "compilerOptions": {
+    "target": "es5",
+    "lib": ["es5","dom"],
     "types": ["cypress"]
   },
   "include": ["**/*.ts"]
@@ -446,6 +511,9 @@ module.exports = {
   "baseUrl": "http://localhost:3000"
 }
 ```
+
+Add this point, we should probably restart VS code, just so everything loads up
+correctly.
 
 ### Delete all examples
 
@@ -602,8 +670,8 @@ describe("Register", () => {
 
   it("registers user", () => {
     cy.visit('/register');
-    cy.get(".register input[name=name]").clear().type(value);
-    cy.get(".register input[name=password]").clear().type(value);
+    cy.get(".register input[name=name]").clear().type('Joe');
+    cy.get(".register input[name=password]").clear().type('password1');
     cy.get(".register button").click();
     cy.url().should("not.contain", "register");
   });
@@ -626,7 +694,7 @@ Let's see if we can run this test.
 Open a terminal tab, navigate to backend and run it in e2e mode
 
 ```bash
-cd e2e-workshop/backend
+cd e2e-workshop/my_backend
 MIX_ENV=e2e mix phx.server
 ```
 
@@ -634,14 +702,14 @@ Open another terminal tab, navigate to frontend and run it in dev mode
 
 ```bash
 cd e2e-workshop/frontend
-mix run dev
+npm run dev
 ```
 
 Finally, open a third tap, navigate to our new cypress folder and run the
 cypress dashboard
 
 ```bash
-cd e2e-workshop/e2e_new
+cd e2e-workshop/my_e2e
 npx cypress open
 ```
 
@@ -658,8 +726,6 @@ If it didn't, here's a couple of thins you could do to debug
     to see it from the browser network tab because it's outside of the browser,
     but you can see it by clicking on the request in replay and checking the
     console output.
-
-
 
 # I want to do more.
 

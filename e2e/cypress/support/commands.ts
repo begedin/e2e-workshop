@@ -6,9 +6,9 @@ const apiUrl = (path: string) => `http://localhost:4000/${path}`;
  *
  * Needs to be run before every test that deals with the db.
  */
-Cypress.Commands.add("checkoutSandbox", () =>
-  cy.request("POST", apiUrl("sandbox")).then((response) => {
-    Cypress.env("sandboxId", response.body);
+Cypress.Commands.add('checkoutSandbox', () =>
+  cy.request('POST', apiUrl('sandbox')).then((response) => {
+    Cypress.env('sandboxId', response.body);
   })
 );
 
@@ -19,11 +19,11 @@ Cypress.Commands.add("checkoutSandbox", () =>
  * Needs to be run before every test that deals with the db.
  * Assumes the `cy.checkoutSandbox` command was called first.
  */
-Cypress.Commands.add("useSandbox", () =>
-  cy.intercept({ url: "http://localhost:4000/**" }, (req) => {
-    const sandboxId = Cypress.env("sandboxId");
+Cypress.Commands.add('useSandbox', () =>
+  cy.intercept({ url: 'http://localhost:4000/**' }, (req) => {
+    const sandboxId = Cypress.env('sandboxId');
     if (sandboxId) {
-      req.headers["sandbox"] = sandboxId;
+      req.headers['sandbox'] = sandboxId;
     }
     req.continue();
   })
@@ -35,19 +35,22 @@ Cypress.Commands.add("useSandbox", () =>
  *
  * Needs to be run before every test that deals with the db.
  */
-Cypress.Commands.add("checkinSandbox", () =>
+Cypress.Commands.add('checkinSandbox', () =>
   cy.request({
-    method: "DELETE",
-    url: apiUrl("sandbox"),
-    headers: { Sandbox: Cypress.env("sandboxId") },
+    method: 'DELETE',
+    url: apiUrl('sandbox'),
+    headers: { Sandbox: Cypress.env('sandboxId') },
   })
 );
 
-const createRequest = (schema: string, attributes: {}) => ({
-  method: "POST",
-  url: apiUrl("factory"),
+const createRequest = (
+  schema: string,
+  attributes: Record<string, unknown>
+) => ({
+  method: 'POST',
+  url: apiUrl('factory'),
   body: { schema, attributes },
-  headers: { Sandbox: Cypress.env("sandboxId") },
+  headers: { Sandbox: Cypress.env('sandboxId') },
 });
 
 /**
@@ -72,6 +75,8 @@ const createRequest = (schema: string, attributes: {}) => ({
  * cy.create('todo', { title: 'Foo', user: { id: 1} })
  * ```
  */
-Cypress.Commands.add("create", (recordType: string, attributes: Record<string, any>) =>
-  cy.request(createRequest(recordType, attributes)).its("body")
+Cypress.Commands.add(
+  'create',
+  (recordType: string, attributes: Record<string, unknown>) =>
+    cy.request(createRequest(recordType, attributes)).its('body')
 );

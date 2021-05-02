@@ -1,54 +1,54 @@
 class RegisterPage {
   visit() {
-    cy.visit("/register");
+    cy.visit('/register');
   }
 
   fillName(value: string) {
-    cy.get(".register input[name=name]").clear().type(value);
+    cy.get('.register input[name=name]').clear().type(value);
   }
 
   fillPassword(value: string) {
-    cy.get(".register input[name=password]").clear().type(value);
+    cy.get('.register input[name=password]').clear().type(value);
   }
 
   submit() {
-    cy.get(".register button").click();
+    cy.get('.register button').click();
   }
 }
 
 class LoginPage {
   visit() {
-    cy.visit("/login");
+    cy.visit('/login');
   }
 
   fillName(value: string) {
-    cy.get(".login input[name=name]").clear().type(value);
+    cy.get('.login input[name=name]').clear().type(value);
   }
 
   fillPassword(value: string) {
-    cy.get(".login input[name=password]").clear().type(value);
+    cy.get('.login input[name=password]').clear().type(value);
   }
 
   submit() {
-    cy.get(".login button").click();
+    cy.get('.login button').click();
   }
 }
 
 class TodosPage {
   visit() {
-    cy.visit("/");
+    cy.visit('/');
   }
 
   fillTitle(value: string) {
-    cy.get(".new-todo input[name=title]").clear().type(value);
+    cy.get('.new-todo input[name=title]').clear().type(value);
   }
 
   submit() {
-    cy.get(".new-todo button").click();
+    cy.get('.new-todo button').click();
   }
 
   get todos() {
-    return cy.get(".todo");
+    return cy.get('.todo');
   }
 
   getTodo(index: number) {
@@ -57,7 +57,7 @@ class TodosPage {
 
   deleteTodo(index: number) {
     this.todos.eq(index).within(() => {
-      cy.get("button").click();
+      cy.get('button').click();
     });
   }
 }
@@ -80,11 +80,11 @@ export default class PageObject {
   todosPage: TodosPage;
 
   navbar = {
-    clickLogin() {
+    clickLogin(): void {
       cy.get("nav a[href='/login']").click();
     },
 
-    clickTodos() {
+    clickTodos(): void {
       cy.get("nav a[href='/']").click();
     },
   };
@@ -101,7 +101,7 @@ export default class PageObject {
    * - fills in form
    * - submits it
    */
-  login(name: string, password: string) {
+  login(name: string, password: string): void {
     this.loginPage.visit();
     this.loginPage.fillName(name);
     this.loginPage.fillPassword(password);
