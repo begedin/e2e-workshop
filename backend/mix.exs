@@ -61,7 +61,7 @@ defmodule TodoList.MixProject do
   defp dialyzer do
     [
       plt_add_deps: :app_tree,
-      plt_file: {:no_warn, "priv/plts/e2e.plt"}
+      plt_file: {:no_warn, "priv/plts/todo_list.plt"}
     ]
   end
 

@@ -3,19 +3,16 @@
 
 import PageObject from "../PageObject";
 
-let app: PageObject;
+let user: { id: number; name: string; password: string };
 
 describe("Todos", () => {
   beforeEach(() => {
     cy.useSandbox();
     cy.checkoutSandbox();
 
-    app = new PageObject();
-
-    const user = { name: "Joe", password: "password1" };
-    cy.create("user", user);
-
-    app.login(user.name, user.password);
+    cy.create("user", { name: "Joe", password: "password1" }).then((record) => {
+      user = record;
+    });
   });
 
   afterEach(() => {
@@ -24,6 +21,7 @@ describe("Todos", () => {
 
   it("creates and deletes todos", () => {
     const app = new PageObject();
+    app.login(user.name, user.password);
 
     app.navbar.clickTodos();
 
@@ -42,5 +40,16 @@ describe("Todos", () => {
     app.todosPage.deleteTodo(1);
 
     app.todosPage.todos.should("have.length", 1);
+  });
+
+  it.only("loads and lists todos", () => {
+    cy.create("todo", { title: "Read a Book", user });
+    cy.create("todo", { title: "Watch a Movie", user });
+
+    const app = new PageObject();
+    app.login(user.name, user.password);
+    app.navbar.clickTodos();
+
+    app.todosPage.todos.should("have.length", 2);
   });
 });

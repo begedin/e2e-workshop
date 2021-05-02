@@ -50,12 +50,19 @@ defmodule TodoList.FactoryPlug do
     Enum.map(attrs, &create(schema, &1, nil))
   end
 
-  def create(schema, %{} = attrs, nil), do: SandboxFactory.insert(schema, attrs)
-  def create(schema, %{} = attrs, count), do: SandboxFactory.insert_list(count, schema, attrs)
+  def create(schema, %{} = attrs, nil) do
+    SandboxFactory.insert(schema, attrs)
+  end
+
+  def create(schema, %{} = attrs, count) do
+    SandboxFactory.insert_list(count, schema, attrs)
+  end
 
   @spec atomize(any) :: any
   defp atomize(%{} = attrs) do
-    Enum.map(attrs, fn {k, v} -> {String.to_atom(k), atomize(v)} end) |> Enum.into(%{})
+    attrs
+    |> Enum.map(fn {k, v} -> {String.to_atom(k), atomize(v)} end)
+    |> Map.new()
   end
 
   defp atomize(attrs) when is_list(attrs) do

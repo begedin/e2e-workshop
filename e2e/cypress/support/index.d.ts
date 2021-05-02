@@ -3,9 +3,6 @@ declare namespace Cypress {
     useSandbox(): Chainable<void>;
     checkoutSandbox(): Chainable<string>;
     checkinSandbox(): Chainable<void>;
-    create<T = Record<string, string | number | boolean>, R = any>(
-      type: String,
-      params: T
-    ): Chainable<R>;
+    create<T = Record<string, any>, R = any>(type: String, params: T): Chainable<R>;
   }
 }

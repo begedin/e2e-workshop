@@ -37,12 +37,21 @@ defmodule TodoListWeb.Endpoint do
   plug(Plug.RequestId)
   plug(Plug.Telemetry, event_prefix: [:phoenix, :endpoint])
 
-  plug(CORSPlug, headers: CORSPlug.defaults()[:headers] ++ ["Sandbox"])
-
   # We use a key in config, rather than just checking Mix.env, because
   # Mix.env will not be available, if we want to run this in release, for
   # example.
   is_e2e? = Application.get_env(:todo_list, :env) === :e2e
+
+  # CorsPlug is generally needed when the backend is served from a different
+  # endpoint to the frontend, but for e2e, we need to allow an extra header.
+  cors_headers =
+    if is_e2e? do
+      CORSPlug.defaults()[:headers] ++ ["sandbox"]
+    else
+      CORSPlug.defaults()[:headers]
+    end
+
+  plug(CORSPlug, headers: cors_headers)
 
   if is_e2e? do
     # Prevents all api requests without a sandbox id in

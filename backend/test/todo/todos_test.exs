@@ -1,4 +1,5 @@
 defmodule TodoList.TodosTest do
+  @moduledoc false
   use TodoList.DataCase
 
   alias TodoList.Todos
