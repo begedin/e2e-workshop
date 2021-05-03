@@ -411,10 +411,12 @@ Now we just need to add this plug to our endpoint module
 
 ```Elixir
 # backend/lib/todo_list_web/endpoint.ex
-# new code block. right after `Plug.Head`, before `Plug.Session`
-plug(Plug.Head)
+# at the end of the `is_e2e?` block
 
 if is_e2e? do
+  # ...
+  plug(Phoenix.Ecto.SQL.Sandbox, ...)
+
   # Exposes additional endpoints to easily create db records
   # needed for test setup.
   plug(TodoList.FactoryPlug)
