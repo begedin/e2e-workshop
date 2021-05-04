@@ -1,5 +1,5 @@
 <template>
-  <AccountForm class="register" @submit="onSubmit" />
+  <AccountForm class="register" text="Register" @submit="onSubmit" />
 </template>
 
 <script lang="ts">

@@ -22,7 +22,7 @@ export default defineComponent({
     const store = useStore();
     const authenticated = computed(() => store.state.authenticated);
 
-    const logout = store.dispatch('logout');
+    const logout = () => store.dispatch('logout');
 
     return { authenticated, logout };
   },
